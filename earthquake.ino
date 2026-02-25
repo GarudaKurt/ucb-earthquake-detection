@@ -3,6 +3,9 @@
 #include <Adafruit_SH110X.h>
 #include <Adafruit_NeoPixel.h>
 
+#include "gyro.h"
+GYRO gyro;
+
 #define LED_PIN   4
 #define LED_COUNT 7
 #define BLINK_INTERVAL 500  // ms
@@ -42,6 +45,7 @@ void setup() {
   LEDstrip.begin();
   LEDstrip.clear();
   LEDstrip.show();
+  gyro.initMPU();
 
   Wire.begin();
   display.begin(I2C_ADDRESS, true);
@@ -53,7 +57,7 @@ void loop() {
   int sensorValue = digitalRead(vibrationSensor);
   Serial.println(sensorValue);
 
-  if (sensorValue == HIGH && !buzzerActive) {
+  if (sensorValue == HIGH && gyro.Status() <= 2.0 && !buzzerActive) {
     buzzerActive = true;
     buzzerStartTime = millis();
     digitalWrite(buzzerPin, HIGH);
